@@ -12,12 +12,14 @@ namespace TravellingSalesman
     class TSPInstance
     {
         private string filename;
-        private List<PointF> cities;
+        public List<PointF> originalCitiesData;
         private double lengthOfTour;
 
         public TSPInstance(String fn)
         {
-            filename = fn;
+            // relative path for resource folder
+            string path = "..\\..\\Resources\\";
+            filename = path + fn;
         } 
 
         public double LengthOfTour
@@ -101,10 +103,56 @@ namespace TravellingSalesman
                 Console.WriteLine("Oh no" + e.Message);
             }
 
-            cities = result;
+            originalCitiesData = result;
+
+            lengthOfTour = CalculateLength(originalCitiesData);
         }
 
-        public void CalculateLength()
+        //Nearest Neighbour alg
+        public List<PointF> NearestNeighbour(List<PointF> citiesIn)
+        {
+            // deep copy of given list
+            List<PointF> cities = new List<PointF>(citiesIn);
+
+            // Create new empty list to store re-ordered tour
+            List<PointF> newTour = new List<PointF>();
+
+            // reference to closest city
+            PointF closestCity = new PointF();
+
+            // get first city as staring point and remove from list as its been used 
+            PointF current = cities.ElementAt(0);
+            cities.RemoveAt(0);
+            newTour.Add(current);   // add current city
+            
+            for (int i = 0; i < cities.Count; ++i)
+            {
+                double distance = double.PositiveInfinity;
+
+                // find closest city to current
+                foreach (PointF possCity in cities)
+                {
+                    double pointDistance = Distance(current, possCity);
+
+                    if (pointDistance < distance)
+                    {
+                        closestCity = possCity;
+                        distance = pointDistance;
+                    }
+                }
+
+                cities.Remove(closestCity);
+                current = closestCity;
+                newTour.Add(closestCity);
+            }
+
+
+
+            return newTour;
+        }
+
+        // Calculate length of tour
+        public double CalculateLength(List<PointF> cities)
         {
             double result = 0;
 
@@ -118,9 +166,10 @@ namespace TravellingSalesman
                 previousCity = city;
             }
 
-            lengthOfTour = result;
+            return result;
         }
 
+        // calculate distance between two points
         private double Distance(PointF p1, PointF p2)
         {
             // method to calculate distance between two points
