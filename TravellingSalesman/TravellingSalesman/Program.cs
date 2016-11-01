@@ -11,7 +11,7 @@ namespace TravellingSalesman
     {
         static void Main(string[] args)
         {
-            TSPInstance test = new TSPInstance("a280.tsp");
+            TSPInstance test = new TSPInstance("att532.tsp");
 
             test.LoadTSPLib();      // load library
 
@@ -19,7 +19,11 @@ namespace TravellingSalesman
 
             List<PointF> nn = test.NearestNeighbour(test.originalCitiesData);
 
+
+            Console.WriteLine("is valid: " + test.Correct(nn));
+
             Console.WriteLine("nn =" + test.CalculateLength(nn));
+
             Console.ReadLine();
         }
 

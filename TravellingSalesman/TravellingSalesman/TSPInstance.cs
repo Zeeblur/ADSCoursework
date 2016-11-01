@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 using System.Drawing;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace TravellingSalesman
 {
+
     class TSPInstance
     {
         private string filename;
@@ -103,6 +105,7 @@ namespace TravellingSalesman
                 Console.WriteLine("Oh no" + e.Message);
             }
 
+
             originalCitiesData = result;
 
             lengthOfTour = CalculateLength(originalCitiesData);
@@ -123,29 +126,35 @@ namespace TravellingSalesman
             // get first city as staring point and remove from list as its been used 
             PointF current = cities.ElementAt(0);
             cities.RemoveAt(0);
-            newTour.Add(current);   // add current city
-            
-            for (int i = 0; i < cities.Count; ++i)
+
+            double closestDistance;
+
+            while (cities.Count > 0)
             {
-                double distance = double.PositiveInfinity;
+                newTour.Add(current);   // add current city
+                        
+                closestDistance = double.PositiveInfinity;
 
                 // find closest city to current
                 foreach (PointF possCity in cities)
                 {
-                    double pointDistance = Distance(current, possCity);
+                    double pointDistance = DistanceSQ(current, possCity);
 
-                    if (pointDistance < distance)
+                    // if distance is closer, update vars
+                    if (pointDistance < closestDistance)
                     {
                         closestCity = possCity;
-                        distance = pointDistance;
+                        closestDistance = pointDistance;
                     }
                 }
 
+                // remove closest city from the list, add to tour, and set as current to loop and find closest to that
                 cities.Remove(closestCity);
                 current = closestCity;
-                newTour.Add(closestCity);
+                
             }
 
+            newTour.Add(current);
 
 
             return newTour;
@@ -181,6 +190,51 @@ namespace TravellingSalesman
             result = Math.Sqrt(difference.X * difference.X + difference.Y * difference.Y);
 
             return result;
+        }
+
+        // calculate squared distance between two points
+        private double DistanceSQ(PointF p1, PointF p2)
+        {
+            // method to calculate distance between two points squared
+
+            double result = 0;
+
+            PointF difference = new PointF(p1.X - p2.X, p1.Y - p2.Y);
+
+            result = (difference.X * difference.X) + (difference.Y * difference.Y);
+
+
+            // distance squared is used to save on computing expensive sqrt for nearest neighbour check
+            return result;
+        }
+
+        // check if correct
+        public bool Correct(List<PointF> toCheck)
+        {
+            // compare sizes. If wrong don't calculate anything
+            if (toCheck.Count != originalCitiesData.Count)
+                return false;
+
+            foreach (PointF p in originalCitiesData)
+            {
+                // foreach original city, check if it is within the new permutation
+                if (!toCheck.Contains(p))
+                    return false;
+            }
+
+            // create new hashSet to check for duplicates. Add each point into set and if it can't then it is a duplicate
+            HashSet<PointF> hashSet = new HashSet<PointF>();
+            
+            for (int i = 0; i < toCheck.Count; ++i)
+            {
+                if (!hashSet.Add(toCheck[i]))
+                    return false;
+            }
+            
+
+            // all checks passed return true
+            return true;
+
         }
     }
 }
