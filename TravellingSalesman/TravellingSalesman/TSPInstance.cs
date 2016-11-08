@@ -17,6 +17,8 @@ namespace TravellingSalesman
         public List<PointF> originalCitiesData;
         private double lengthOfTour;
 
+        private int dimension;
+
         public TSPInstance(String fn)
         {
             // relative path for resource folder
@@ -41,7 +43,7 @@ namespace TravellingSalesman
                 reader = new StreamReader(filename);
                
                 bool readingNodes = false; // flag to check for End of Field
-                int dimension = 0;         // dimension is number of points within problem
+                dimension = 0;             // dimension is number of points within problem
 
                 // using closes stream when complete
                 using (reader)
@@ -60,6 +62,7 @@ namespace TravellingSalesman
                             {
                                 // close app if dimension isn't correct
                                 Console.WriteLine("Error loading cities");
+                                Console.ReadLine();
                                 Environment.Exit(-1);
                             }
                         }
@@ -111,7 +114,7 @@ namespace TravellingSalesman
             lengthOfTour = CalculateLength(originalCitiesData);
         }
 
-        //Nearest Neighbour alg
+        //Nearest Neighbour alg from pseudocode
         public List<PointF> NearestNeighbour(List<PointF> citiesIn)
         {
             // deep copy of given list
@@ -138,7 +141,7 @@ namespace TravellingSalesman
                 // find closest city to current
                 foreach (PointF possCity in cities)
                 {
-                    double pointDistance = DistanceSQ(current, possCity);
+                    double pointDistance = Distance(current, possCity);
 
                     // if distance is closer, update vars
                     if (pointDistance < closestDistance)
@@ -159,6 +162,69 @@ namespace TravellingSalesman
 
             return newTour;
         }
+
+        public List<PointF> TwoOpt(List<PointF> citiesIn)
+        {
+            List<PointF> result = new List<PointF>(citiesIn);
+
+            int improvement = 0;
+
+            while (improvement <5)
+            {
+                // calculate distance of current tour.
+                double bestDistance = CalculateLength(result);
+
+                Console.WriteLine(bestDistance);
+
+                for (int i = 0; i < dimension -1; ++i)
+                {
+                    for (int k = i + 1; k < dimension; ++k)
+                    {
+                        List<PointF> newTour = Swap(result, i, k);
+
+                        double new_distance = CalculateLength(newTour);
+
+                        if (new_distance < bestDistance)
+                        {
+                            improvement = 0;
+                            result = newTour;
+                            bestDistance = new_distance;
+
+                        }
+                    }
+                }
+                improvement++;
+            }
+
+
+            return result;
+        }
+
+        public List<PointF> Swap(List<PointF> tour, int i, int k)
+        {
+            List<PointF> result = new List<PointF>();
+
+            // first part of route add in order, tour[0] to tour[i-1]
+            for (int c =0; c <= i -1; ++c)
+            {
+                result.Add(tour[c]);
+            }
+
+            int dec = 0;
+            for (int c = i; c <= k; ++c)
+            {
+                result.Add(tour[k - dec]);
+                dec++;
+            }
+
+            for (int c = k + 1; c < dimension; ++c)
+            {
+                result.Add(tour[c]);
+            }
+
+            return result;
+        }
+            
 
         // Calculate length of tour
         public double CalculateLength(List<PointF> cities)
