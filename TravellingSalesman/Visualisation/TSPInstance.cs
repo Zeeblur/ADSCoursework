@@ -8,13 +8,14 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
 
-namespace TravellingSalesman
+namespace Visualisation
 {
 
     class TSPInstance
     {
         private string filename;
         public List<PointF> originalCitiesData;
+        private double lengthOfTour;
 
         private int dimension;
 
@@ -27,7 +28,12 @@ namespace TravellingSalesman
             LoadTSPLib();
         } 
 
-        public void LoadTSPLib()
+        public double LengthOfTour
+        {
+            get { return lengthOfTour; }
+        }
+
+        private void LoadTSPLib()
         {
             List<PointF> result = new List<PointF>();
 
@@ -106,7 +112,8 @@ namespace TravellingSalesman
 
 
             originalCitiesData = result;
-            
+
+            lengthOfTour = CalculateLength(originalCitiesData);
         }
 
         //Nearest Neighbour alg from pseudocode
@@ -167,7 +174,9 @@ namespace TravellingSalesman
             while (improvement < 5)
             {
                 // calculate distance of current tour.
-                double bestDistance = CalculateLength(result);                
+                double bestDistance = CalculateLength(result);
+
+                Console.WriteLine(bestDistance);
 
                 for (int i = 0; i < dimension -1; ++i)
                 {
