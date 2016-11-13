@@ -59,7 +59,6 @@ namespace TravellingSalesman
                             {
                                 // close app if dimension isn't correct
                                 Console.WriteLine("Error loading cities");
-                                Console.ReadLine();
                                 Environment.Exit(-1);
                             }
                         }
@@ -141,8 +140,8 @@ namespace TravellingSalesman
                 foreach (PointF possCity in cities)
                 {
 
-                    // using distance sq as a comparison for a small optimization  
-                    double pointDistance = DistanceSQ(current, possCity);
+                    // calculate distance between points
+                    double pointDistance = Distance(current, possCity);
 
                     // if distance is closer, update vars
                     if (pointDistance < closestDistance)
@@ -158,6 +157,7 @@ namespace TravellingSalesman
                 
             }
 
+            // add final city to tour
             newTour.Add(current);
 
 
@@ -172,19 +172,24 @@ namespace TravellingSalesman
 
             int improvement = 0;
 
+            // stop running algorithm after 5 times with no improvement
             while (improvement < 5)
             {
                 // calculate distance of current tour.
                 double bestDistance = CalculateLength(result);                
 
+                // for every city in the list
                 for (int i = 0; i < dimension -1; ++i)
                 {
+                    // for every possible other city in the list, swap the values and calc new length
                     for (int k = i + 1; k < dimension; ++k)
                     {
+                        // this method creates a new permutation by swapping elements at i and k
                         List<PointF> newTour = Swap(result, i, k);
 
                         double new_distance = CalculateLength(newTour);
 
+                        // if new length of tour is an improvement, reset the counter and save new tour as best
                         if (new_distance < bestDistance)
                         {
                             improvement = 0;
@@ -193,36 +198,42 @@ namespace TravellingSalesman
 
                         }
                     }
-                }
-                improvement++;
+                }           
+
+                improvement++;      // increase improvement counter, reset at 0 if improvement has been found
             }
 
-            
+            // return best list
             return result;
         }
 
+        // this method returns a new permutation of the list with swapped values
         public List<PointF> Swap(List<PointF> tour, int i, int k)
         {
+            // create a new blank tour
             List<PointF> result = new List<PointF>();
 
-            // first part of route add in order, tour[0] to tour[i-1]
+            // for the first part of route add in order, tour[0] to tour[i-1]
             for (int c =0; c <= i -1; ++c)
             {
                 result.Add(tour[c]);
             }
 
-            int dec = 0;
+            // for when city = i, until c = k, add them in reverse order
+            int count = 0;
             for (int c = i; c <= k; ++c)
             {
-                result.Add(tour[k - dec]);
-                dec++;
+                result.Add(tour[k - count]);
+                count++;
             }
 
+            // for k+1 onwards, add in order to end of tour
             for (int c = k + 1; c < dimension; ++c)
             {
                 result.Add(tour[c]);
             }
 
+            // return new list
             return result;
         }
 
@@ -251,26 +262,11 @@ namespace TravellingSalesman
 
             double result = 0;
 
+            // pythag
             PointF difference = new PointF(p1.X - p2.X, p1.Y - p2.Y);
 
             result = Math.Sqrt(difference.X * difference.X + difference.Y * difference.Y);
 
-            return result;
-        }
-
-        // calculate squared distance between two points
-        private double DistanceSQ(PointF p1, PointF p2)
-        {
-            // method to calculate distance between two points squared
-
-            double result = 0;
-
-            PointF difference = new PointF(p1.X - p2.X, p1.Y - p2.Y);
-
-            result = (difference.X * difference.X) + (difference.Y * difference.Y);
-
-
-            // distance squared is used to save on computing expensive sqrt for nearest neighbour check
             return result;
         }
 

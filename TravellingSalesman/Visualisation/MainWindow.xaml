@@ -5,12 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Visualisation"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        <Canvas x:Name="mCanvas" HorizontalAlignment="Left" Height="301" Margin="92,10,0,0" VerticalAlignment="Top" Width="310"/>
-        <Button x:Name="button" Content="Nearest" HorizontalAlignment="Left" Margin="407,49,0,0" VerticalAlignment="Top" Width="75"/>
-        <Button x:Name="nnBtn" Content="Nearest" HorizontalAlignment="Left" Margin="407,49,0,0" VerticalAlignment="Top" Width="75" Click="nnBtn_Click"/>
-        <Button x:Name="twoOptBtn" Content="TwoOpt" HorizontalAlignment="Left" Margin="407,87,0,0" VerticalAlignment="Top" Width="75" Click="twoOptBtn_Click"/>
+        Title="MainWindow" Height="480.61" Width="618.902">
+    <Grid Margin="77,1,3.8,-0.6">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="345*"/>
+            <RowDefinition Height="7*"/>
+            <RowDefinition Height="14*"/>
+        </Grid.RowDefinitions>
+        <Canvas x:Name="mCanvas" HorizontalAlignment="Left" Height="301" Margin="-60,10,0,0" VerticalAlignment="Top" Width="375"/>
+        <Button x:Name="nnBtn" Content="Nearest" HorizontalAlignment="Left" Margin="367,81,0,0" VerticalAlignment="Top" Width="75" Click="nnBtn_Click"/>
+        <Button x:Name="twoOptBtn" Content="TwoOpt" HorizontalAlignment="Left" Margin="367,115,0,0" VerticalAlignment="Top" Width="75" Click="twoOptBtn_Click"/>
+        <Label x:Name="dataLbl" Content="DataSet" HorizontalAlignment="Left" Margin="320,19,0,0" VerticalAlignment="Top"/>
+        <RadioButton x:Name="berlinRBtn" Content="Berlin52" HorizontalAlignment="Left" Margin="325,50,0,0" VerticalAlignment="Top" Width="86" Checked="berlinRBtn_Checked"/>
+        <RadioButton x:Name="linRBtn" Content="Lin318" HorizontalAlignment="Left" Margin="416,50,0,0" VerticalAlignment="Top" Width="66" Checked="linRBtn_Checked"/>
+        <Label x:Name="timeLbl" Content="Time: " HorizontalAlignment="Left" Margin="330,203,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lengthLbl" Content="Length: " HorizontalAlignment="Left" Margin="330,234,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="typeLbl" Content="" HorizontalAlignment="Left" Margin="320,284,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="24" Width="202" HorizontalContentAlignment="Center" Height="103"/>
 
     </Grid>
 </Window>
