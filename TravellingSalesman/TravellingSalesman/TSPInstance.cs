@@ -10,26 +10,27 @@ using System.Diagnostics;
 
 namespace TravellingSalesman
 {
-
+    // TSP Instance class contains methods for reading in, and creating tours for a specific tsp problem set
     class TSPInstance
     {
-        private string filename;
-        public List<PointF> originalCitiesData;
+        private string filename;                    // store filename of dataset
+        public List<PointF> originalCitiesData;     // list to store the original cities read from the data
+        private int dimension;                      // dimension stores problem size
 
-        private int dimension;
-
+        // Constructor, takes in file name, adds path to resource folder, stores a reference to it, and runs the file Loader
         public TSPInstance(String fn)
         {
             // relative path for resource folder
             string path = "..\\..\\Resources\\";
-            filename = path + fn;
+            filename = path + fn + ".tsp";
 
             LoadTSPLib();
         } 
 
+        // Load reads from the given file. Checks for errors, parses data. Returns list of points (cities to visit on tour) and size of the problem
         public void LoadTSPLib()
         {
-            List<PointF> result = new List<PointF>();
+            List<PointF> result = new List<PointF>(); // for storing result
 
             StreamReader reader;
             
@@ -72,14 +73,17 @@ namespace TravellingSalesman
                             // split at any number of spaces (1 or more)
                             string[] tokens = Regex.Split(line, @"\s+").ToArray();
 
+                            // trim any space from values
                             tokens[1].Trim();
                             tokens[2].Trim();
 
-                            // token[0] is city ID
-                            float x = float.Parse(tokens[1].Trim());
-                            float y = float.Parse(tokens[2].Trim());
+                            // token[0] is city ID and can be ignored.
 
-                            // add to list of cities
+                            // token[1] is x coord, 2 is y coordinate of city
+                            float x = float.Parse(tokens[1]);
+                            float y = float.Parse(tokens[2]);
+
+                            // create a new point and add to list of cities
                             PointF city = new PointF(x, y);
                             result.Add(city);
                         }
@@ -99,12 +103,12 @@ namespace TravellingSalesman
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception e) // catch all exceptions, and print message.
             {
-                Console.WriteLine("Oh no" + e.Message);
+                Console.WriteLine("Error reading file: " + e.Message);
             }
 
-
+            // store the result
             originalCitiesData = result;
             
         }
@@ -136,7 +140,9 @@ namespace TravellingSalesman
                 // find closest city to current
                 foreach (PointF possCity in cities)
                 {
-                    double pointDistance = Distance(current, possCity);
+
+                    // using distance sq as a comparison for a small optimization  
+                    double pointDistance = DistanceSQ(current, possCity);
 
                     // if distance is closer, update vars
                     if (pointDistance < closestDistance)
@@ -158,8 +164,10 @@ namespace TravellingSalesman
             return newTour;
         }
 
+        // TwoOpt Algorithm: From a starting permutation, swap cities, if better, keep result
         public List<PointF> TwoOpt(List<PointF> citiesIn)
         {
+            // deep copy of list to store result (if no swaps can improve, this is result)
             List<PointF> result = new List<PointF>(citiesIn);
 
             int improvement = 0;
@@ -190,7 +198,6 @@ namespace TravellingSalesman
             }
 
             
-
             return result;
         }
 
