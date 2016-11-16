@@ -1,10 +1,9 @@
-%FILL THESE IN
 \def\mytitle{Travelling Salesman Investigation}
 \def\mykeywords{Algorithms, Travelling Salesman, Nearest Neighbour, Two-Opt}
 \def\myauthor{Zoe Wall}
 \def\contact{40182161@napier.ac.uk}
 \def\mymodule{Algorithms and Data Structures (SET09117)}
-%YOU DON'T NEED TO TOUCH ANYTHING BELOW
+
 \documentclass[10pt, a4paper]{article}
 \usepackage[a4paper,outer=1.5cm,inner=1.5cm,top=1.75cm,bottom=1.5cm]{geometry}
 \twocolumn
@@ -46,6 +45,15 @@
     \end{figure}
 }
 
+\newcommand{\figuremacroF}[5]{
+	\begin{figure}[#1]
+		\centering
+		\includegraphics[width=#5\textwidth]{#2}
+		\caption[#3]{\textbf{#3}#4}
+		\label{fig:#2}
+	\end{figure}
+}
+
 \lstset{
 	escapeinside={/*@}{@*/}, language=C++,
 	basicstyle=\fontsize{8.5}{12}\selectfont,
@@ -69,94 +77,121 @@
 \sloppy
 \begin{document}
 	\maketitle
-	\begin{abstract}
-		\lipsum[2]
-	\end{abstract}
     
 	\textbf{Keywords -- }{\mykeywords}
-    %START FROM HERE
     
 	\section{Introduction}
-	Problem summary including limitations of your sol.
 	
-	In the Travelling Salesman Problem, or 'TSP', a salesman is given a list of cities in which he has to travel between every one, once and only once, and loop back to the starting position. It is a 
+	In the Travelling Salesman Problem, or 'TSP', a salesman is given a list of cities in which he has to travel between every one, once and only once, and loop back to the starting position. It is a very common problem that is used in researching optimisation techniques. The key is to finding a tour or route length that is the shortest distance between all of the points, but to find this most optimal solution would be to check every possible permutation. This method is called brute force.\cite{brute} However this method is just simply not feasible on even modest datasets as the total number of permutations to be checked can be calculated with equation 1,
+	
+	\begin{equation}
+	\frac{(n-1)!}{2}
+	\end{equation}
+	
+	where n is the dimension of the problem. This means that for even just 10 cities, 181440 possible permutations are to be found. Yes, this will yield an exact solution to the problem, but could take an extraordinary amount of time. Without brute force as an option, the issue then becomes finding a balance between tour length and the time taken to find it. For a good solution, an optimal result should be found in a reasonable amount of time.
+	
+	The TSP, is thought to be an NP problem, which means that it cannot be solved in polynomial time and therefore the complexity of any algorithm used to solve it would be exponential. \cite{np} As the dimension of the problem increases, the time taken to solve the problem would increase exponentially. The two heuristics chosen to experiment with are nearest neighbour and the two-optimisation for it.
+		
 	\section{Method}
-	Description of the experiment conducted
-	Intances to be examined how did you 
+	An experiment was conducted into the performance of certain algorithms solving for different Travelling Salesman problem sets. For this experiment, nearest neighbour and an optimisation for it was implemented in c$\#$. 
+	
+	\subsection{Nearest Neighbour}
+	The Nearest Neighbour algorithm is probably the most intuitive starting point when solving a TSP. The salesman starts at a random point and then visits the nearest city, they continue to visit the next nearest city from where they currently are until they reach the end. Once they have reached the final city, the salesman loops back to the starting point. However, this algorithm, sometimes referred to as "greedy" produces a non-optimal route, as some cities can be "forgotten" and left to expensive insertions into the route at the end, see figure \ref{fig:nnroutepath}.
+	\figuremacro{h}{nnroutepath}{Nearest Neighbour Route}{ - Image of route containing 318 cities calculated by Nearest Neighbour algorithm. Note cross over paths as some cities are left out yielding a suboptimal route.}{1.0}
+	
+	Theoretically the complexity of this algorithm is $O(n^2)$. Which means that at it's worst case scenario, where the next closest point is found at the end of the iteration, it has to iterate through the dataset n*n times. Which means the time taken to run this algorithm will increase exponentially with the dimension of the problem. However, it is fairly consistent with it's results being sub-optimal and it's speed is relatively quick compared to others. \cite{nearest}
+	
+	\subsection{Two-Opt}
+	Starting from the nearest neighbour, a optimisation algorithm was implemented to improve the route by getting rid of the expensive cross-overs. It works by iteratively swapping two points until the optimal route is found, see algorithm 1.
+	
+	\begin{algorithm}[h]
+		\While{no improvement is made < 5times}{
+			best\_distance = calculateDistance(existing\_route)\;
+			\For{i = 0 \; number of nodes to be swapped - 1}{
+				\For{k = i+1 \; number of nodes to be swapped}
+				{
+					new\_route = 2-OptSwap()\;
+					new\_distance = calculateDistance(new\_route)\;
+					\If{new\_distance < best\_distance}
+					{
+						existing\_route = new\_route\;
+						best\_distance = new\_distance\;
+						reset while loop
+					}
+				}
+			}
+		}
+		\caption{Two-Opt Swap}
+	\end{algorithm}
+	
+	Due to the iterative process of this particular algorithm, it is not efficient for larger data-sets. It first has to calculate the nearest neighbour route, and then for a worst case scenario it can take up to $O(n)$ to compute one swap. This can be optimised further, however the algorithm used in the experiment was simplified therefore the expected result from this algorithm will be quite costly for larger dimension problems. \cite{two}	
+	
+	\subsection{Tour}
+	
+	In this experiment the algorithms were run on several different problem sets. One of the main goals of the experiment was to investigate the run-times of each algorithm, so a range of dimensions were chosen.	As the two algorithms implemented both have an exponential growth they both begin to become inefficient at larger problem sets. Due to the nature of the Two-Opt algorithm, the data sets used were spread out from between small to reasonable large - around 1000 cities. Any larger, the two-opt algorithm would have taken too long to complete to comfortably repeat for this experiment.
+	
+	\subsection{Testing Process}
+	
+	In completing the experiment, the algorithms were run a number of times and the length, of the tour created, and time taken to calculate it were serialised to a .csv file. This meant that the experiment could be left to complete and the data could repeated easily and averaged. A project was also created alongside the experiment to visualise the data to see if there was any problems with the created tour, see figures \ref{fig:nnroutepath} and \ref{fig:twooptpath} to see the results of this. Use of in-line debugging also helped to check that the tour was valid. To ensure the accuracy and repeatability of the results, all tests were run in the same sitting on a 2.60GHz i7-6700HQ CPU with no other programs running.
 	
 	\section{Results}
-	Tables and charts to show performance of sol.
-	demonstration that sol is valid
-	demonstration of quality of sol.
+	
+	Average times and lengths for a range of different problem sizes can be seen in figure \ref{fig:Table}. The lengths calculated by the tour of the algorithm was the same each time for the nearest neighbour and two-optimal tours which meant that the algorithms implemented were reliable as they always produced the same result for each specific data set. 
+	
+	\figuremacro{h}{Table}{Table of Results}{- showing the calculated tour lengths and time taken to complete each algorithm for a specific data size (dimension).}{1.0}
+	
+	\subparagraph{Two-Opt} The results show that the Two-Opt algorithm, although a lot slower consistently achieved a considerably better tour length than the nearest neighbour. On average it improved the tour length by 15.99\%. However around the 800 city mark, the time taken on average to solve the problem was around 2 minutes, this  \ref{fig:twotime}
+	
+	i dont know what to say here
+	
+	\subparagraph{Nearest Neighbour} Nearest Neighbour, albeit increasing with the data set, the run-time of this algorithm was very small compared to Two-Opt. For the smallest two data sets used, a time of 0 ms was recorded as it was extremely fast. A time was only registered after the dimension of the problem was greater than 200. It took the dimension to be over 1000 before the run-time was close to the run-time of the Two-Opt algorithm for the smallest dimension.
+
+	
+	\figuremacroF{H}{nntime}{Graph}{- showing lengths and times}{1.0}
+	
+	\figuremacroF{H}{twotime}{Graph}{- showing lengths and times}{1.0}
+	
+	\clearpage
+	\figuremacroF{H}{comparison}{Graph}{- showing lengths and times}{1.0}
+
+		\newpage
+		\clearpage
+	\subparagraph{Validity}
+	To demonstrate that the solutions were valid several different checks were used. Firstly, a check to see if the new tour contained the correct number of cities. Then a check to see if there was any duplicates within the data was performed. This was implemented by attempting to add each city to a HashSet, each element within a HashSet must be unique so would return false if a duplicate value was added. A final check was also completed to see if every element within the original data set appeared somewhere within the tour.	If all of these checks passed, the method returned true and it was printed to the console window.
+	
+	Another way to check the algorithms were working correctly was to use the visualiser. By using a WPF canvas each point was added from the tour and lines were drawn between each city. This was a simple way to compare the results of the algorithms by eye. Figure \ref{fig:twooptpath} shows the two-optimal route found, with no paths crossing over. 
+	
+	\figuremacro{H}{twooptpath}{Two-Opt Route}{- Image of two-optimal nearest neighbour route from same dataset as figure \ref{fig:nnroutepath}.}{1.0}
+		
+
+	\subparagraph{Quality}
+	
+	The quality of a solution to a TSP depends on both the route length and the cost of the algorithm. The results from figure \ref{fig:comparison} show a comparison between the costs of each algorithm. The Two-Optimal tour is shown to have a very high compared cost to the Nearest Neighbour tour at higher dimensions. The figure is slightly misleading as even for the dimensions smaller than around 400 the results are not in the same order of magnitude. For the data set of dimension 400, the Two-Opt took around 12 seconds to complete whilst the nearest neighbour's run-time was only 3ms. Meaning the quality of the Two-Opt algorithm is bad if the costs were compared in this way. However, it consistently yields a significantly better tour length than the nearest neighbour. 
+	The time taken to complete a data set of size 1000 is around 5 minutes long, which is probably the limit you would put on gaining a result. Therefore, providing the dimension of the TSP is less than 1000, the quality of the Two-Opt solution is good. Whereas for datasets larger than 1000, the Nearest Neighbour algorithm is of better quality, even though it returns a sub-optimal route.
+	
 	\section{Conclusions}
-	Summary of results
-	Reflection on performance of your assessment
-	\section{Appendix}
-	source code
-    \paragraph{Referencing}
-    You should cite References like this: \cite{Keshav}. The references are saved in an external .bib file, and will automatically be added ot the bibliography at the end once cited.
-    
-    \figuremacro{h}{placeholder}{ImageTitle}{ - Some Descriptive Text}{1.0}
+	%SUMmary of results
+	%REflection on performance of your assessment
+	Report includes:
+	 An explanation for the
+	results obtained
+	 Reflections on how reliable
+	the results are
+	 Reflections on the value of
+	the new implementation /
 	
-	\section{Formatting}
-	Some common formatting you may need uses these commands for \textbf{Bold Text}, \textit{Italics}, and \underline{underlined}.
-	\subsection{LineBreaks}
-	Here is a line
-    
-    Here is a line followed by a double line break.
-	This line is only one line break down from the above, Notice that latex can ignore this
-    
-    We can force a break \\ with the break operator.
-    
-	\subsection{Maths}
-    Embedding Maths is Latex's bread and butter    
-    
-    {\centering \Large \(
-        J = \begin{bmatrix}
-            \frac{\delta e}{\delta \theta _0}
-            \frac{\delta e}{\delta \theta _1}
-            \frac{\delta e}{\delta \theta _2}
-        \end{bmatrix}
-        = e_{current} - e_{target} 
-    \)\par}
+	\subparagraph{Summary of Results}
 	
-	\subsection{Code Listing}
-    You can load segments of code from a file, or embed them directly.
-    
-\begin{lstlisting}[caption = Hello World! in c++]
-#include <iostream>
-
-int main() {
-    std::cout << "Hello World!" << std::endl;
-    std::cin.get();
-    return 0;
-}
-\end{lstlisting}
-
-%\lstinputlisting[caption = Hello World! in python script]{./sourceCode/hello.py}
-    
-\subsection{PseudoCode}
-
-\begin{algorithm}[h]
-\For{$i = 0$ \KwTo $100$}{
- print\_number = true\;
-\If{i is divisible by 3}{
- print "Fizz"\;
- print\_number = false\;
-}
-\If{i is divisible by 5}{
- print "Buzz"\;
- print\_number = false\;
-}
-\If{print\_number}{
-    print i\;
-}
-print a newline\;
-}
-\caption{FizzBuzz}
-\end{algorithm}
+	Results obtained two-opt algorthim used was poor and unoptimised
 	
-\section{Conclusion}	
+	\subparagraph{Performance Assessment}
+   
+
+\newpage
+\newpage
+\section{Appendix}
+\lstinputlisting[caption = TSPInstance script containing loading and algorithms ]{../TravellingSalesman/TravellingSalesman/TSPInstance.cs}
+\lstinputlisting[caption = Script to run Solver]{../TravellingSalesman/TravellingSalesman/Program.cs}
 \bibliographystyle{ieeetr}
 \bibliography{references}
 		
